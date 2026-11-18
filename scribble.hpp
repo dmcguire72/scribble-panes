@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string>
 #include <vector>
 
 namespace panes {
@@ -46,6 +47,7 @@ public:
     void undo(panes::App& app);
     void redo(panes::App& app);
     void replace_all(std::vector<Segment> loaded, panes::App& app);
+    bool open_path(const std::string& path, panes::App& app);
 
     void paint(panes::Canvas& c);
 

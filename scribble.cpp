@@ -167,6 +167,19 @@ void ScribbleEngine::replace_all(std::vector<Segment> loaded, panes::App& app) {
     redraw_all(app);
 }
 
+bool ScribbleEngine::open_path(const std::string& path, panes::App& app) {
+    commit_stroke();
+    std::vector<Segment> loaded;
+    if (!load_segments(path, loaded)) {
+        app.set_text("readout", "failed to load file!");
+        return false;
+    }
+    const size_t count = loaded.size();
+    replace_all(std::move(loaded), app);
+    app.set_text("readout", "loaded " + std::to_string(count) + " segments");
+    return true;
+}
+
 void ScribbleEngine::undo(panes::App& app) {
     commit_stroke();
     if (undo_stack_.empty()) {
@@ -289,14 +302,7 @@ void ScribbleEngine::bind_toolbar(panes::App& app) {
         opts.filters = { { "Scribble Drawing (.scribble)", "scribble" }, { "All Files", "*" } };
         app.open_file(opts, [this, &app](const std::vector<std::string>& paths) {
             if (paths.empty()) return;
-            std::vector<Segment> loaded;
-            if (load_segments(paths.front(), loaded)) {
-                const size_t count = loaded.size();
-                replace_all(std::move(loaded), app);
-                app.set_text("readout", "loaded " + std::to_string(count) + " segments");
-            } else {
-                app.set_text("readout", "failed to load file!");
-            }
+            open_path(paths.front(), app);
         });
     });
 

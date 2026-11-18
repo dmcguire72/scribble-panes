@@ -82,7 +82,7 @@ panes:
           - { id: scribble, type: canvas }
 )yaml";
 
-int main(int, char**) try {
+int main(int argc, char** argv) try {
     panes::App app;
     app.title("Scribble").add_panes(kUI);
 #if defined(PANES_FAMILY_DESKTOP)
@@ -97,6 +97,10 @@ int main(int, char**) try {
 
     ScribbleEngine engine;
     engine.bind(app);
+
+    if (argc > 1 && !engine.open_path(argv[1], app)) {
+        std::cerr << "scribble: could not open \"" << argv[1] << "\"\n";
+    }
 
     return app.run();
 } catch (const std::exception& e) {
