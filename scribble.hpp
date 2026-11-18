@@ -65,6 +65,7 @@ private:
     std::vector<Segment> segments_;
     std::vector<DrawOp>  undo_stack_;
     std::vector<DrawOp>  redo_stack_;
+    panes::App*          app_          = nullptr;
     StrokeColor          current_color_{ 255, 77, 77, 255 };
     size_t               painted_      = 0;
     size_t               stroke_start_ = 0;

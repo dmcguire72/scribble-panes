@@ -9,32 +9,47 @@
 namespace fs = std::filesystem;
 
 const char *kCss = R"css(
-#main    { background-color: #180b0e; color: #f7e6e8; padding: 16px; gap: 12px; }
+:root {
+    --bg:          light-dark(#fff5f6, #180b0e);
+    --fg:          light-dark(#3b1219, #f7e6e8);
+    --muted:       light-dark(#8a4a54, #d8a8b0);
+    --border:      light-dark(#e3b5bc, #5c242e);
+    --field-bg:    light-dark(#ffffff, #261116);
+    --focus:       light-dark(#dc2626, #ef4444);
+    --btn-bg:      light-dark(#dc2626, #b91c1c);
+    --btn-hover:   light-dark(#b91c1c, #dc2626);
+    --btn2-bg:     light-dark(#fee2e2, #7f1d1d);
+    --btn2-fg:     light-dark(#7f1d1d, #ffffff);
+    --btn2-border: light-dark(#fca5a5, #991b1b);
+    --btn2-hover:  light-dark(#fecaca, #991b1b);
+}
+
+#main    { background-color: var(--bg); color: var(--fg); padding: 16px; gap: 12px; }
 #screen     { flex: 1; flex-direction: row; gap: 12px; }
-canvas   { flex: 1; border: 2px solid #5c242e; border-radius: 14px; }
+canvas   { flex: 1; border: 2px solid var(--border); border-radius: 14px; }
 #bar     { flex-direction: row; gap: 10px; align-items: center; }
 
-.btn       { padding: 8px 16px; border-radius: 8px; background-color: #b91c1c; color: #ffffff; }
-.btn:hover { background-color: #dc2626; }
+.btn       { padding: 8px 16px; border-radius: 8px; background-color: var(--btn-bg); color: #ffffff; }
+.btn:hover { background-color: var(--btn-hover); }
 
-#open, #save             { background-color: #7f1d1d; border: 1px solid #991b1b; }
-#open:hover, #save:hover { background-color: #991b1b; }
+#open, #save             { background-color: var(--btn2-bg); color: var(--btn2-fg); border: 1px solid var(--btn2-border); }
+#open:hover, #save:hover { background-color: var(--btn2-hover); }
 
 #color_input {
     width: 110px;
     height: 34px;
     padding: 6px 10px;
-    border: 1px solid #5c242e;
+    border: 1px solid var(--border);
     border-radius: 8px;
-    background-color: #261116;
-    color: #f7e6e8;
+    background-color: var(--field-bg);
+    color: var(--fg);
 }
 
 #color_input:focus {
-    border-color: #ef4444;
+    border-color: var(--focus);
 }
 
-#readout { color: #d8a8b0; }
+#readout { color: var(--muted); }
 )css";
 
 const char* kUI = R"yaml(
@@ -74,7 +89,6 @@ int main(int, char**) try {
     app.window_size(900, 560);
 #endif
 
-    // optional CSS external theme:
     if (fs::exists("assets/style.css")) {
         app.stylesheet("assets/style.css");
     } else {

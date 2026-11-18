@@ -78,9 +78,16 @@ bool load_segments(const std::string& path, std::vector<Segment>& out_segments) 
     return true;
 }
 
+struct Rgb { uint8_t r, g, b; };
+
+constexpr Rgb canvas_bg(bool dark)   { return dark ? Rgb{ 30, 14, 18 }   : Rgb{ 255, 250, 250 }; }
+constexpr Rgb canvas_hint(bool dark) { return dark ? Rgb{ 150, 90, 100 } : Rgb{ 176, 120, 130 }; }
+
 }  // namespace
 
 void ScribbleEngine::bind(panes::App& app) {
+    app_ = &app;
+    app.on_theme_change([this](bool, panes::App& a) { redraw_all(a); });
     bind_canvas(app);
     bind_toolbar(app);
     bind_shortcuts(app);
@@ -88,7 +95,8 @@ void ScribbleEngine::bind(panes::App& app) {
 
 void ScribbleEngine::clear_surface(panes::App& app) {
     if (panes::Canvas* c = app.canvas("scribble")) {
-        c->clear(30, 14, 18, 255);
+        const Rgb bg = canvas_bg(app.dark_mode());
+        c->clear(bg.r, bg.g, bg.b, 255);
     }
 }
 
@@ -209,8 +217,10 @@ void ScribbleEngine::redo(panes::App& app) {
 
 void ScribbleEngine::paint(panes::Canvas& c) {
     SDL_Renderer* r = c.renderer();
+    const bool dark = app_ ? app_->dark_mode() : true;
     if (c.resized()) {
-        SDL_SetRenderDrawColor(r, 30, 14, 18, 255);
+        const Rgb bg = canvas_bg(dark);
+        SDL_SetRenderDrawColor(r, bg.r, bg.g, bg.b, 255);
         SDL_RenderClear(r);
         painted_ = 0;
     }
@@ -222,7 +232,8 @@ void ScribbleEngine::paint(panes::Canvas& c) {
         SDL_RenderLine(r, s.x0, s.y0 + 1, s.x1, s.y1 + 1);
     }
     if (segments_.empty()) {
-        SDL_SetRenderDrawColor(r, 150, 90, 100, 255);
+        const Rgb hint = canvas_hint(dark);
+        SDL_SetRenderDrawColor(r, hint.r, hint.g, hint.b, 255);
         SDL_RenderDebugText(r, 12, 12, "draw here");
     }
 }
